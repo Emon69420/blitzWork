@@ -208,3 +208,12 @@ alter table public.dispute_evidence disable row level security;
 alter table public.jurors disable row level security;
 alter table public.dispute_jurors disable row level security;
 alter table public.juror_votes disable row level security;
+
+create table if not exists public.on_chain_credentials (
+  id uuid primary key default gen_random_uuid(),
+  credential_id bigint not null unique,
+  tx_hash text not null,
+  created_at timestamptz not null default timezone('utc', now())
+);
+
+alter table public.on_chain_credentials disable row level security;

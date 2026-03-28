@@ -35,6 +35,7 @@ export default function ProfilePage() {
     issuerName: ""
   });
   const [submitting, setSubmitting] = useState(false);
+  const [txHashes, setTxHashes] = useState<Record<string, string>>({});
 
   const { data: credentials, refetch: refetchCreds } = useReadContract({
     address: REGISTRY_ADDRESS,
@@ -67,6 +68,22 @@ export default function ProfilePage() {
     loadProfile();
   }, [address]);
 
+  // Fetch transaction hashes for all credentials from Supabase
+  useEffect(() => {
+    async function loadHashes() {
+      if (!supabase) return;
+      const { data } = await supabase.from("on_chain_credentials").select("credential_id, tx_hash");
+      if (data) {
+        const mapping: Record<string, string> = {};
+        data.forEach((row: any) => {
+          mapping[row.credential_id] = row.tx_hash;
+        });
+        setTxHashes(mapping);
+      }
+    }
+    loadHashes();
+  }, [credentials]);
+
   const handleIssueCredential = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!myAddress) return;
@@ -94,6 +111,13 @@ export default function ProfilePage() {
 
       const result = await res.json();
       if (result.success) {
+        // Map the credential ID to the transaction hash in Supabase for persistence
+        if (supabase) {
+          await supabase.from("on_chain_credentials").insert({
+            credential_id: BigInt(result.credentialId).toString(),
+            tx_hash: result.txHash
+          });
+        }
         alert("Credential issued successfully on-chain!");
         setShowGiveCred(false);
         refetchCreds();
@@ -208,10 +232,23 @@ export default function ProfilePage() {
                     <div className="text-[10px] uppercase font-bold text-[var(--text-muted)]">
                       Issuer: <span className="text-white font-mono">{cred.issuerAddress.slice(0, 10)}...</span>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="h-1.5 w-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
-                      <span className="text-[10px] font-bold text-green-500 uppercase">On-Chain Verified</span>
-                    </div>
+                    
+                    {txHashes[cred.id.toString()] ? (
+                      <a 
+                        href={`https://testnet.monadexplorer.com/tx/${txHashes[cred.id.toString()]}`} 
+                        target="_blank" 
+                        className="flex items-center gap-1.5 hover:opacity-80 transition-opacity"
+                        rel="noreferrer"
+                      >
+                        <div className="h-1.5 w-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
+                        <span className="text-[10px] font-bold text-green-500 uppercase underline decoration-green-500/30">View on Explorer</span>
+                      </a>
+                    ) : (
+                      <div className="flex items-center gap-1.5 opacity-50">
+                        <div className="h-1.5 w-1.5 rounded-full bg-[var(--text-muted)]" />
+                        <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase">On-Chain Verified</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
