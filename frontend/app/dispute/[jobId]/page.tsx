@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import { AppShell } from "@/components/Shell";
 import { useMarketplaceRole } from "@/hooks/useMarketplaceRole";
 import { type Job } from "@/lib/contracts";
@@ -464,7 +465,9 @@ export default function DisputePage() {
               {joinedJurors.length ? (
                 joinedJurors.map((entry) => (
                   <div key={entry.id} className="flex items-center justify-between p-3 bg-[var(--bg-secondary)] border border-[var(--border-dim)] rounded-lg">
-                    <span className="font-mono text-xs truncate max-w-[200px]">{entry.juror_user_id}</span>
+                    <Link href={`/profile/${entry.juror_user_id}`} className="font-mono text-xs truncate max-w-[200px] hover:text-[var(--accent-primary)] transition-colors">
+                      {entry.juror_user_id}
+                    </Link>
                     <span className={`badge ${entry.status === 'voted' ? 'badge-accent' : ''} text-[9px]`}>{entry.status}</span>
                   </div>
                 ))

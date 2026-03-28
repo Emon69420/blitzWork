@@ -9,9 +9,8 @@ import { useMarketplaceRole } from "@/hooks/useMarketplaceRole";
 const navItems = [
   { href: "/employer", label: "Employer" },
   { href: "/freelancer", label: "Freelancer" },
-  { href: "/profile", label: "Profile" },
   { href: "/disputes", label: "Disputes" },
-  { href: "/credentials", label: "Credentials" },
+  { href: "/profile", label: "Edit Profile" },
 ];
 
 export function AppShell({
@@ -70,8 +69,16 @@ export function AppShell({
             </div>
 
             <nav className="space-y-1">
+              {isConnected && (
+                <Link
+                  href={`/profile/${address}`}
+                  className={`sidebar-nav-item ${pathname === `/profile/${address}` ? "active" : ""}`}
+                >
+                  <span className="text-[var(--accent-primary)]">My Public Profile</span>
+                </Link>
+              )}
               {navItems.map((item) => {
-                const active = pathname?.startsWith(item.href);
+                const active = pathname === item.href;
                 return (
                   <Link
                     key={item.href}

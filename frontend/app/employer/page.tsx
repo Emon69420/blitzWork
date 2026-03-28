@@ -574,16 +574,16 @@ export default function EmployerPage() {
                     {job.applications.map(app => (
                       <div key={app.id} className="bg-[var(--bg-secondary)] rounded-lg p-3 border border-[var(--border-dim)]">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="font-semibold text-sm truncate max-w-[120px]">
+                          <Link href={`/profile/${app.freelancer?.wallet_address}`} className="font-semibold text-sm truncate max-w-[120px] hover:text-[var(--accent-primary)] transition-colors">
                             {app.freelancer_profile?.display_name || "Applicant"}
-                          </span>
+                          </Link>
                           <button onClick={() => prepareFundingDraft(job, app)} className="text-[10px] text-[var(--accent-primary)] hover:underline uppercase font-bold">
                             Select
                           </button>
                         </div>
-                        <div className="font-mono text-[10px] text-[var(--text-muted)] truncate mb-2">
+                        <Link href={`/profile/${app.freelancer?.wallet_address}`} className="block font-mono text-[10px] text-[var(--text-muted)] truncate mb-2 hover:text-white transition-colors">
                           {app.freelancer?.wallet_address}
-                        </div>
+                        </Link>
                         <div className="flex gap-2">
                           <button onClick={() => updateApplicationStatus(app.id, 'shortlisted')} className="text-[10px] text-[var(--text-muted)] hover:text-white uppercase font-bold">
                             Shortlist
@@ -682,7 +682,9 @@ function EmployerJobCard({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="bg-[var(--bg-tertiary)] p-4 rounded-xl border border-[var(--border-dim)]">
               <div className="text-[10px] font-bold uppercase text-[var(--text-muted)] mb-1">Freelancer</div>
-              <div className="font-mono text-xs truncate text-wrap-safe">{job.freelancer}</div>
+              <Link href={`/profile/${job.freelancer}`} className="font-mono text-xs truncate text-wrap-safe hover:text-[var(--accent-primary)] transition-colors">
+                {job.freelancer}
+              </Link>
             </div>
             <div className="bg-[var(--bg-tertiary)] p-4 rounded-xl border border-[var(--border-dim)]">
               <div className="text-[10px] font-bold uppercase text-[var(--text-muted)] mb-1">Rate</div>
