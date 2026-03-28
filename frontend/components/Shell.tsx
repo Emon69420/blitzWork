@@ -31,7 +31,7 @@ export function AppShell({
     <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] antialiased">
       <div className="mx-auto flex max-w-[1600px] flex-col lg:flex-row">
         {/* Sidebar */}
-        <aside className="w-full border-b border-[var(--border-dim)] bg-[var(--bg-primary)] p-6 lg:fixed lg:h-screen lg:w-[280px] lg:border-b-0 lg:border-r">
+        <aside className="w-full border-b-[1.5px] border-[var(--border-dim)] bg-[var(--bg-primary)] p-6 lg:fixed lg:h-screen lg:w-[280px] lg:border-b-0 lg:border-r-[1.5px]">
           <Link href="/" className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent-primary)] font-bold text-white shadow-[0_0_20px_var(--accent-glow)]">
               MW
@@ -118,12 +118,12 @@ export function AppShell({
         <main className="flex-1 lg:pl-[280px]">
           <div className="section-padding">
             <header className="mb-12 max-w-4xl">
-              <div className="badge badge-accent mb-4">Workspace</div>
+              <span className="badge mb-4">Workspace</span>
               <h1 className="mb-4">{title}</h1>
-              {subtitle && <p className="text-lg text-[var(--text-secondary)]">{subtitle}</p>}
+              {subtitle && <p className="text-xl text-[var(--text-secondary)]">{subtitle}</p>}
             </header>
 
-            <div className="bg-gradient-subtle min-h-[500px] rounded-[2rem] border border-[var(--border-dim)] p-8">
+            <div className="min-h-[500px]">
               {children}
             </div>
           </div>

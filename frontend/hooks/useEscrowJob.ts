@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { useReadContracts } from "wagmi";
 import { ESCROW_ABI, ESCROW_ADDRESS, type Job } from "@/lib/contracts";
 
@@ -40,10 +40,12 @@ export function useEscrowJob(jobId: number, options?: UseEscrowJobOptions) {
     },
   });
 
+  const prevJob = useRef<Job | undefined>(undefined);
+  
   const job = useMemo<Job | undefined>(() => {
     const [core, accounting, description] = query.data ?? [];
     if (core?.status !== "success" || accounting?.status !== "success" || description?.status !== "success") {
-      return undefined;
+      return prevJob.current;
     }
 
     const [employer, freelancer, ratePerSecond, totalDeposit, status, streamActive, autoSettlementEnabled] =
@@ -52,7 +54,7 @@ export function useEscrowJob(jobId: number, options?: UseEscrowJobOptions) {
       accounting.result as readonly [bigint, bigint, bigint, bigint, bigint];
     const jobDescription = description.result as string;
 
-    return {
+    const newJob = {
       employer,
       freelancer,
       ratePerSecond,
@@ -67,6 +69,9 @@ export function useEscrowJob(jobId: number, options?: UseEscrowJobOptions) {
       streamActive,
       autoSettlementEnabled,
     };
+    
+    prevJob.current = newJob;
+    return newJob;
   }, [query.data]);
 
   return {

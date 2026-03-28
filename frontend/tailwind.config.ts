@@ -20,7 +20,8 @@ const config: Config = {
         stream: "0 0 40px rgba(131, 110, 249, 0.15)",
       },
       fontFamily: {
-        sans: ["Arial", "Helvetica", "sans-serif"],
+        sans: ["var(--font-figtree)", "Arial", "sans-serif"],
+        fjalla: ["var(--font-fjalla)", "sans-serif"],
         mono: ["Consolas", "Monaco", "monospace"],
       },
     },

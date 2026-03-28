@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+import monadCoinImg from "../../monad-mon-coin-nedir.webp";
 import { useEffect, useRef, useState } from "react";
 import { formatEther } from "viem";
 import { useChainId, useReadContract, useSwitchChain, useWriteContract } from "wagmi";
@@ -114,8 +116,6 @@ export default function FreelancerPage() {
   const [applications, setApplications] = useState<JobApplication[]>([]);
   const [engagements, setEngagements] = useState<Engagement[]>([]);
   const [applyDrafts, setApplyDrafts] = useState<Record<string, string>>({});
-  const [jurorTags, setJurorTags] = useState("");
-  const [jurorRecord, setJurorRecord] = useState<Juror | null>(null);
 
   const { data: jobCount } = useReadContract({
     address: ESCROW_ADDRESS,
@@ -136,17 +136,15 @@ export default function FreelancerPage() {
   async function loadMarketplaceState() {
     if (!supabase || !user) return;
 
-    const [{ data: jobRows }, { data: applicationRows }, { data: engagementRows }, { data: jurorRows }] = await Promise.all([
+    const [{ data: jobRows }, { data: applicationRows }, { data: engagementRows }] = await Promise.all([
       supabase.from("jobs").select("*").eq("status", "open").order("created_at", { ascending: false }),
       supabase.from("job_applications").select("*").eq("freelancer_user_id", user.id).order("created_at", { ascending: false }),
       supabase.from("engagements").select("*").eq("freelancer_user_id", user.id).order("created_at", { ascending: false }),
-      supabase.from("jurors").select("*").eq("user_id", user.id).maybeSingle(),
     ]);
 
     setOpenJobs((jobRows ?? []) as JobListing[]);
     setApplications((applicationRows ?? []) as JobApplication[]);
     setEngagements((engagementRows ?? []) as Engagement[]);
-    setJurorRecord((jurorRows as Juror | null) ?? null);
   }
 
   useEffect(() => {
@@ -199,35 +197,6 @@ export default function FreelancerPage() {
     }
   };
 
-  const toggleJurorPool = async () => {
-    if (!supabase || !user || !address) return;
-
-    try {
-      if (jurorRecord) {
-        const { error } = await supabase
-          .from("jurors")
-          .update({
-            is_active: !jurorRecord.is_active,
-            expertise_tags: parseSkills(jurorTags),
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", jurorRecord.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from("jurors").insert({
-          user_id: user.id,
-          wallet_address: address.toLowerCase(),
-          expertise_tags: parseSkills(jurorTags),
-          is_active: true,
-        });
-        if (error) throw error;
-      }
-
-      await loadMarketplaceState();
-    } catch (jurorError) {
-      alert(jurorError instanceof Error ? jurorError.message : "Failed to update juror status");
-    }
-  };
 
   return (
     <AppShell title="Freelancer Lounge" subtitle="Bid on marketplace briefs and manage your streaming escrow payments.">
@@ -271,25 +240,15 @@ export default function FreelancerPage() {
           </div>
         </section>
 
-        {/* Juror Control */}
-        <section className="card-standard">
-          <div className="badge mb-4">Juror Duty</div>
-          <div className="flex flex-col gap-4">
-            <h3 className="text-xl">Help Settle Disputes</h3>
-            <div className={`p-4 rounded-xl border ${jurorRecord?.is_active ? 'border-green-900/50 bg-green-900/10 text-green-400' : 'border-[var(--border-dim)] bg-[var(--bg-tertiary)] text-[var(--text-muted)]'}`}>
-              Status: {jurorRecord ? (jurorRecord.is_active ? "Ready for duty" : "Paused") : "Not Registered"}
-            </div>
-            <textarea
-              value={jurorTags}
-              onChange={(e) => setJurorTags(e.target.value)}
-              placeholder="Solidity, Frontend, Design (Tags)"
-              className="bg-[var(--bg-tertiary)] border border-[var(--border-dim)] rounded-xl p-4 text-white focus:border-[var(--accent-primary)] outline-none resize-none text-sm"
-              rows={2}
-            />
-            <button onClick={() => void toggleJurorPool()} className="btn-primary w-full">
-              {jurorRecord ? (jurorRecord.is_active ? "Go Offline" : "Go Online") : "Register as Juror"}
-            </button>
-          </div>
+        {/* Prominent Visual Branding container */}
+        <section className="card-standard border border-[var(--border-dim)] rounded-2xl overflow-hidden relative min-h-[250px] !p-0 bg-transparent flex items-center justify-center">
+          <Image 
+            src={monadCoinImg} 
+            alt="Monad Coin Branding" 
+            fill
+            className="object-cover object-center"
+            priority /* load quickly for LCP */
+          />
         </section>
       </div>
 

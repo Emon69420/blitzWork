@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
+import { Figtree, Fjalla_One } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/providers/Providers";
 
-const plusJakarta = Plus_Jakarta_Sans({
+const figtree = Figtree({
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-figtree",
 });
 
-const spaceGrotesk = Space_Grotesk({
+const fjalla = Fjalla_One({
+  weight: "400",
   subsets: ["latin"],
-  variable: "--font-display",
+  variable: "--font-fjalla",
 });
 
 export const metadata: Metadata = {
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${plusJakarta.variable} ${spaceGrotesk.variable}`}>
+      <body className={`${figtree.variable} ${fjalla.variable} bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans antialiased`}>
         <Providers>{children}</Providers>
       </body>
     </html>

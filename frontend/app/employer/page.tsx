@@ -380,240 +380,209 @@ export default function EmployerPage() {
         </div>
       )}
       
-      <div className="mb-12 grid gap-6 lg:grid-cols-3">
-        {/* Identity & Overall Stats */}
-        <section className="card-standard lg:col-span-2">
-          <div className="badge mb-4">Identity</div>
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h2 className="mb-2 truncate">
-                {profileLoading ? "Bootstrapping..." : profile?.display_name || address || "Anonymous"}
-              </h2>
-              <p className="max-w-xl">
-                Your studio manages the transition from project briefs to live on-chain streaming escrow.
-              </p>
+      {/* Master Grid Layout */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 mb-12 border-b-[1.5px] border-[var(--border-dim)] pb-12 items-start">
+        
+        {/* Left Column (25%) */}
+        <div className="xl:col-span-3 flex flex-col gap-6 sticky top-8">
+          <section className="card-standard">
+            <div className="mb-4">
+              <span className="badge">Identity</span>
             </div>
-            <div className="flex flex-col items-center justify-center rounded-2xl bg-[var(--bg-tertiary)] p-6 text-center border border-[var(--border-dim)]">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-2">Funded Jobs</div>
-              <div className="text-4xl font-bold text-[var(--accent-primary)]">{metrics.funded}</div>
+            <h2 className="mb-4 truncate">
+              {profileLoading ? "Bootstrapping..." : profile?.display_name || (address ? address.slice(0, 8) + '...' : "Anonymous")}
+            </h2>
+            <p className="text-sm mb-8">
+              Your studio manages the transition from project briefs to live on-chain streaming escrow.
+            </p>
+            <div className="pt-6 border-t-[1.5px] border-[var(--border-dim)]">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-1">Funded Escrows</div>
+              <div className="text-5xl text-[var(--text-primary)] font-fjalla tracking-normal">{metrics.funded}</div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Quick Metrics */}
-        <div className="grid grid-cols-1 gap-4">
           <MetricCard label="Open Briefs" value={String(metrics.totalJobs)} active />
           <MetricCard label="Total Applicants" value={String(metrics.totalApplicants)} />
         </div>
-      </div>
 
-      <div className="mb-12 grid gap-8 xl:grid-cols-2 row-equal-height">
-        {/* Post Brief Form */}
-        <section className="card-standard">
-          <div className="card-header border-b border-[var(--border-dim)] pb-4 mb-6">
-            <div className="badge badge-accent mb-2">Briefing</div>
-            <h3>Post a Marketplace Brief</h3>
-          </div>
-
-          <form onSubmit={postMarketplaceJob} className="flex flex-col gap-4">
-            <input
-              value={marketplaceForm.title}
-              onChange={(e) => setMarketplaceForm(p => ({ ...p, title: e.target.value }))}
-              placeholder="Job Title (e.g. Solidity Audit)"
-              className="bg-[var(--bg-tertiary)] border border-[var(--border-dim)] rounded-xl p-4 text-white focus:border-[var(--accent-primary)] outline-none"
-              required
-            />
-            <div className="grid gap-4 md:grid-cols-2">
-              <input
-                value={marketplaceForm.category}
-                onChange={(e) => setMarketplaceForm(p => ({ ...p, category: e.target.value }))}
-                placeholder="Category"
-                className="bg-[var(--bg-tertiary)] border border-[var(--border-dim)] rounded-xl p-4 text-white focus:border-[var(--accent-primary)] outline-none"
-              />
-              <input
-                value={marketplaceForm.skills}
-                onChange={(e) => setMarketplaceForm(p => ({ ...p, skills: e.target.value }))}
-                placeholder="Skills (comma separated)"
-                className="bg-[var(--bg-tertiary)] border border-[var(--border-dim)] rounded-xl p-4 text-white focus:border-[var(--accent-primary)] outline-none"
-              />
+        {/* Center Column (45%) */}
+        <div className="xl:col-span-5 flex flex-col gap-8">
+          <section className="card-standard">
+            <div className="border-b-[1.5px] border-[var(--border-dim)] pb-4 mb-6">
+              <span className="badge badge-accent mb-2">Briefing</span>
+              <h3>Post a Market Brief</h3>
             </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold uppercase text-[var(--text-muted)] ml-2">Rate/sec (MON)</label>
-                <input
-                  value={marketplaceForm.ratePerSecond}
-                  onChange={(e) => setMarketplaceForm(p => ({ ...p, ratePerSecond: e.target.value }))}
-                  type="number" step="0.000001"
-                  className="bg-[var(--bg-tertiary)] border border-[var(--border-dim)] rounded-xl p-4 text-white focus:border-[var(--accent-primary)] outline-none"
-                  required
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold uppercase text-[var(--text-muted)] ml-2">Deposit (MON)</label>
-                <input
-                  value={marketplaceForm.depositTarget}
-                  onChange={(e) => setMarketplaceForm(p => ({ ...p, depositTarget: e.target.value }))}
-                  type="number" step="0.01"
-                  className="bg-[var(--bg-tertiary)] border border-[var(--border-dim)] rounded-xl p-4 text-white focus:border-[var(--accent-primary)] outline-none"
-                  required
-                />
-              </div>
-            </div>
-            <textarea
-              value={marketplaceForm.description}
-              onChange={(e) => setMarketplaceForm(p => ({ ...p, description: e.target.value }))}
-              rows={4}
-              placeholder="Deliverables and expectations..."
-              className="bg-[var(--bg-tertiary)] border border-[var(--border-dim)] rounded-xl p-4 text-white focus:border-[var(--accent-primary)] outline-none resize-none"
-              required
-            />
-            <button type="submit" disabled={busy || !user} className="btn-primary w-full mt-2">
-              {busy ? "Publishing..." : "Publish Job Posting"}
-            </button>
-          </form>
-        </section>
-
-        {/* Funding Form */}
-        <section className="card-standard">
-          <div className="card-header border-b border-[var(--border-dim)] pb-4 mb-6">
-            <div className="badge badge-accent mb-2">Escrow</div>
-            <h3>Deploy On-Chain Funding</h3>
-          </div>
-
-          <form onSubmit={fundSelectedFreelancer} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <label className="text-[10px] font-bold uppercase text-[var(--text-muted)] ml-2">Freelancer Wallet</label>
+            <form onSubmit={postMarketplaceJob} className="flex flex-col gap-4">
               <input
-                value={onChainDraft.freelancerWallet}
-                onChange={(e) => setOnChainDraft(p => ({ ...p, freelancerWallet: e.target.value }))}
-                placeholder="0x..."
-                className="font-mono bg-[var(--bg-tertiary)] border border-[var(--border-dim)] rounded-xl p-4 text-white focus:border-[var(--accent-primary)] outline-none"
+                value={marketplaceForm.title}
+                onChange={(e) => setMarketplaceForm(p => ({ ...p, title: e.target.value }))}
+                placeholder="Job Title (e.g. Solidity Audit)"
                 required
               />
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              <input
-                value={onChainDraft.ratePerSecond}
-                onChange={(e) => setOnChainDraft(p => ({ ...p, ratePerSecond: e.target.value }))}
-                type="number" step="0.000001"
-                placeholder="Rate per sec"
-                className="bg-[var(--bg-tertiary)] border border-[var(--border-dim)] rounded-xl p-4 text-white focus:border-[var(--accent-primary)] outline-none"
+              <div className="grid gap-4 md:grid-cols-2">
+                <input
+                  value={marketplaceForm.category}
+                  onChange={(e) => setMarketplaceForm(p => ({ ...p, category: e.target.value }))}
+                  placeholder="Category"
+                />
+                <input
+                  value={marketplaceForm.skills}
+                  onChange={(e) => setMarketplaceForm(p => ({ ...p, skills: e.target.value }))}
+                  placeholder="Skills (CSV)"
+                />
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="flex flex-col gap-2">
+                  <label className="text-[10px] font-bold uppercase text-[var(--text-muted)] ml-1">Rate/sec (MON)</label>
+                  <input
+                    value={marketplaceForm.ratePerSecond}
+                    onChange={(e) => setMarketplaceForm(p => ({ ...p, ratePerSecond: e.target.value }))}
+                    type="number" step="0.000001"
+                    required
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-[10px] font-bold uppercase text-[var(--text-muted)] ml-1">Deposit (MON)</label>
+                  <input
+                    value={marketplaceForm.depositTarget}
+                    onChange={(e) => setMarketplaceForm(p => ({ ...p, depositTarget: e.target.value }))}
+                    type="number" step="0.01"
+                    required
+                  />
+                </div>
+              </div>
+              <textarea
+                value={marketplaceForm.description}
+                onChange={(e) => setMarketplaceForm(p => ({ ...p, description: e.target.value }))}
+                rows={4}
+                placeholder="Deliverables and expectations..."
+                required
               />
-              <input
-                value={onChainDraft.depositAmount}
-                onChange={(e) => setOnChainDraft(p => ({ ...p, depositAmount: e.target.value }))}
-                type="number" step="0.01"
-                placeholder="Deposit Amount"
-                className="bg-[var(--bg-tertiary)] border border-[var(--border-dim)] rounded-xl p-4 text-white focus:border-[var(--accent-primary)] outline-none"
-              />
-            </div>
-            <textarea
-              value={onChainDraft.description}
-              onChange={(e) => setOnChainDraft(p => ({ ...p, description: e.target.value }))}
-              rows={4}
-              placeholder="On-chain job metadata..."
-              className="bg-[var(--bg-tertiary)] border border-[var(--border-dim)] rounded-xl p-4 text-white focus:border-[var(--accent-primary)] outline-none resize-none"
-            />
-            <div className="spacer flex-1" />
-            <div className="flex flex-col gap-4 mt-2">
-              <button type="submit" disabled={busy || !address} className="btn-primary w-full">
-                {busy ? "Confirming..." : `Create Escrow (${onChainDraft.depositAmount} MON)`}
+              <button type="submit" disabled={busy || !user} className="btn-primary w-full mt-4">
+                {busy ? "Publishing..." : "Publish Job Posting"}
               </button>
-              {txHash && (
-                <a href={`https://testnet.monadexplorer.com/tx/${txHash}`} target="_blank" className="text-xs text-[var(--accent-primary)] text-center hover:underline">
-                  View Transaction Receipt
-                </a>
-              )}
+            </form>
+          </section>
+
+          <section className="card-standard">
+            <div className="border-b-[1.5px] border-[var(--border-dim)] pb-4 mb-6">
+              <span className="badge badge-accent mb-2">Escrow</span>
+              <h3>Direct Assignment</h3>
             </div>
-          </form>
-        </section>
+            <form onSubmit={fundSelectedFreelancer} className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] font-bold uppercase text-[var(--text-muted)] ml-1">Freelancer Wallet</label>
+                <input
+                  value={onChainDraft.freelancerWallet}
+                  onChange={(e) => setOnChainDraft(p => ({ ...p, freelancerWallet: e.target.value }))}
+                  placeholder="0x..."
+                  required
+                />
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <input
+                  value={onChainDraft.ratePerSecond}
+                  onChange={(e) => setOnChainDraft(p => ({ ...p, ratePerSecond: e.target.value }))}
+                  type="number" step="0.000001"
+                  placeholder="Rate per sec"
+                />
+                <input
+                  value={onChainDraft.depositAmount}
+                  onChange={(e) => setOnChainDraft(p => ({ ...p, depositAmount: e.target.value }))}
+                  type="number" step="0.01"
+                  placeholder="Deposit Amount"
+                />
+              </div>
+              <textarea
+                value={onChainDraft.description}
+                onChange={(e) => setOnChainDraft(p => ({ ...p, description: e.target.value }))}
+                rows={3}
+                placeholder="On-chain job metadata..."
+              />
+              <div className="flex flex-col gap-4 mt-4">
+                <button type="submit" disabled={busy || !address} className="btn-primary w-full bg-[var(--text-primary)] !text-black border-transparent hover:!bg-transparent hover:!text-[var(--text-primary)] hover:border-[var(--text-primary)]">
+                  {busy ? "Confirming..." : `Create Escrow (${onChainDraft.depositAmount} MON)`}
+                </button>
+                {txHash && (
+                  <a href={`https://testnet.monadexplorer.com/tx/${txHash}`} target="_blank" className="font-mono text-[10px] text-center text-white hover:underline">
+                    View Receipt: {txHash.slice(0, 10)}...
+                  </a>
+                )}
+              </div>
+            </form>
+          </section>
+        </div>
+
+        {/* Right Column (30%) */}
+        <div className="xl:col-span-4 flex flex-col gap-6">
+          <div className="flex items-end justify-between border-b-[1.5px] border-[var(--border-dim)] pb-4">
+            <div>
+              <span className="badge mb-2">Marketplace</span>
+              <h2 className="!text-3xl">Active Briefs</h2>
+            </div>
+            <span className="text-xl font-fjalla">{jobs.length}</span>
+          </div>
+
+          {!jobs.length ? (
+            <div className="card-standard border-dashed py-20 text-center text-[var(--text-secondary)]">
+              No active briefs in your studio.
+            </div>
+          ) : (
+            <div className="flex flex-col gap-6 overflow-y-auto max-h-[800px] pr-2">
+              {jobs.map((job) => (
+                <article key={job.id} className="card-standard !p-5">
+                  <div className="flex flex-wrap gap-2 mb-4 border-b-[1.5px] border-[var(--border-dim)] pb-4">
+                    <span className="badge badge-accent">{job.status}</span>
+                    <span className="badge">{job.category || "General"}</span>
+                  </div>
+                  <h4 className="mb-2 line-clamp-2">{job.title}</h4>
+                  <div className="text-[10px] uppercase text-[var(--text-muted)] font-bold mb-4">
+                    {job.deposit_target_mon} MON ESCROW
+                  </div>
+                  <p className="text-sm line-clamp-2 mb-6">{job.description}</p>
+                  
+                  <div className="border-[1.5px] border-[var(--border-dim)] rounded-[20px] p-4 bg-transparent">
+                    <div className="flex items-center justify-between mb-4 border-b-[1.5px] border-[var(--border-dim)] pb-2">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">Applicants</span>
+                      <span className="badge">{job.applications.length}</span>
+                    </div>
+                    <div className="space-y-4">
+                      {job.applications.map(app => (
+                        <div key={app.id} className="flex flex-col gap-2">
+                          <div className="flex items-center justify-between">
+                            <Link href={`/profile/${app.freelancer?.wallet_address}`} className="font-semibold text-sm truncate max-w-[120px] hover:text-[#909090]">
+                              {app.freelancer_profile?.display_name || "Applicant"}
+                            </Link>
+                            <button onClick={() => prepareFundingDraft(job, app)} className="btn-base !h-6 !px-2 border-[1.5px] border-[var(--border-dim)] text-[10px] hover:bg-white hover:text-black">
+                              Select
+                            </button>
+                          </div>
+                          <div className="flex gap-2">
+                            <button onClick={() => updateApplicationStatus(app.id, 'shortlisted')} className="text-[10px] uppercase font-bold text-[#909090] hover:text-white">Shortlist</button>
+                            <button onClick={() => updateApplicationStatus(app.id, 'rejected')} className="text-[10px] uppercase font-bold text-red-500 hover:text-red-400">Decline</button>
+                          </div>
+                        </div>
+                      ))}
+                      {job.applications.length === 0 && (
+                        <div className="text-[10px] text-[#909090] text-center">Waiting for proposals...</div>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Job List */}
-      <section className="mb-12">
-        <div className="mb-8 flex items-end justify-between">
-          <div>
-            <div className="badge mb-2">Marketplace</div>
-            <h2>Active Job Briefs</h2>
-          </div>
-          <div className="text-sm text-[var(--text-muted)]">{jobs.length} postings</div>
-        </div>
-
-        {!jobs.length ? (
-          <div className="card-standard border-dashed border-[var(--border-dim)] py-20 text-center">
-            <p className="text-lg">No active jobs found in your studio.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-            {jobs.map((job) => (
-              <article key={job.id} className="card-standard">
-                <div className="flex items-start justify-between mb-6">
-                  <div>
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      <span className="badge badge-accent">{job.status}</span>
-                      <span className="badge">{job.category || "General"}</span>
-                    </div>
-                    <h4>{job.title}</h4>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-xl font-bold">{job.deposit_target_mon} MON</div>
-                    <div className="text-[10px] uppercase text-[var(--text-muted)]">Target Escrow</div>
-                  </div>
-                </div>
-
-                <p className="text-sm line-clamp-3 mb-6 flex-1">{job.description}</p>
-
-                {/* Applications Section */}
-                <div className="rounded-xl bg-[var(--bg-tertiary)] p-4 border border-[var(--border-dim)]">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Applicants</div>
-                    <span className="badge">{job.applications.length}</span>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    {job.applications.map(app => (
-                      <div key={app.id} className="bg-[var(--bg-secondary)] rounded-lg p-3 border border-[var(--border-dim)]">
-                        <div className="flex items-center justify-between mb-2">
-                          <Link href={`/profile/${app.freelancer?.wallet_address}`} className="font-semibold text-sm truncate max-w-[120px] hover:text-[var(--accent-primary)] transition-colors">
-                            {app.freelancer_profile?.display_name || "Applicant"}
-                          </Link>
-                          <button onClick={() => prepareFundingDraft(job, app)} className="text-[10px] text-[var(--accent-primary)] hover:underline uppercase font-bold">
-                            Select
-                          </button>
-                        </div>
-                        <Link href={`/profile/${app.freelancer?.wallet_address}`} className="block font-mono text-[10px] text-[var(--text-muted)] truncate mb-2 hover:text-white transition-colors">
-                          {app.freelancer?.wallet_address}
-                        </Link>
-                        <div className="flex gap-2">
-                          <button onClick={() => updateApplicationStatus(app.id, 'shortlisted')} className="text-[10px] text-[var(--text-muted)] hover:text-white uppercase font-bold">
-                            Shortlist
-                          </button>
-                          <button onClick={() => updateApplicationStatus(app.id, 'rejected')} className="text-[10px] text-red-900/50 hover:text-red-500 uppercase font-bold ml-auto">
-                            Decline
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                    {job.applications.length === 0 && (
-                      <div className="text-[10px] text-[var(--text-muted)] text-center py-4">Waiting for proposals...</div>
-                    )}
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* Active Escrow Monitoring */}
-      <section>
+      {/* Funded Escrows */}
+      <section className="bg-white text-black p-8 lg:p-12 mb-12 rounded-[40px]">
         <div className="mb-8">
-          <div className="badge mb-2">On-Chain</div>
-          <h2>Funded Escrows</h2>
-          <p className="mt-2">Monitor real-time streams and intervene in disputes.</p>
+          <h2 className="!text-black mb-1">Funded Escrows:</h2>
+          <p className="font-fjalla text-sm uppercase tracking-wide text-black">Monitor real-time streams and intervene in disputes</p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {jobCount ? (
             Array.from({ length: Number(jobCount) }, (_, i) => (
               <EmployerJobCard
@@ -627,7 +596,7 @@ export default function EmployerPage() {
               />
             ))
           ) : (
-            <div className="card-standard py-12 text-center text-[var(--text-muted)]">
+            <div className="card-standard bg-[#0e0e0e] text-white py-12 text-center text-[#909090] col-span-2 border-transparent">
               No active on-chain escrows detected.
             </div>
           )}
@@ -639,9 +608,9 @@ export default function EmployerPage() {
 
 function MetricCard({ label, value, active }: { label: string; value: string; active?: boolean }) {
   return (
-    <div className={`card-standard !p-5 ${active ? 'border-[var(--accent-primary)] shadow-[0_0_20px_var(--accent-glow)]' : ''}`}>
-      <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-1">{label}</div>
-      <div className="text-2xl font-bold">{value}</div>
+    <div className={`card-standard !flex-row font-fjalla items-center justify-between !py-4 px-6 ${active ? 'bg-white !text-black' : ''}`}>
+      <div className={`text-xl uppercase ${active ? 'text-black' : 'text-[#909090]'}`}>{label}</div>
+      <div className="text-3xl font-light">{value}</div>
     </div>
   );
 }
@@ -654,11 +623,15 @@ function EmployerJobCard({
   runEmployerForceSettle: (j: number, i?: bigint) => Promise<void>;
   runEmployerAutoSettlement: (j: number, e: boolean) => Promise<void>;
 }) {
-  const { job } = useEscrowJob(jobId, { refetchInterval: 2000 });
+  const { job, isLoading } = useEscrowJob(jobId, { refetchInterval: 2000 });
   const { data: earnedContract } = useReadContract({
     address: ESCROW_ADDRESS, abi: ESCROW_ABI, functionName: "getEarnedAmount", args: [BigInt(jobId)],
     query: { refetchInterval: 1000 }
   });
+
+  if (isLoading && !job) {
+    return <div className="bg-[#1c1c1c] animate-pulse rounded-[40px] min-h-[300px] w-full border border-transparent" />;
+  }
 
   if (!job || job.employer.toLowerCase() !== walletAddress?.toLowerCase()) return null;
 
@@ -667,91 +640,53 @@ function EmployerJobCard({
   const statusLabel = JOB_STATUS[job.status as keyof typeof JOB_STATUS] || "Unknown";
 
   return (
-    <div className="card-standard">
-      <div className="flex flex-col md:flex-row gap-8 mb-8">
-        <div className="flex-1">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="font-mono text-xs text-[var(--text-muted)]">Job #{jobId}</span>
-            <span className="badge badge-accent">{statusLabel}</span>
-            {job.streamActive && <div className="flex items-center gap-1.5 ml-2">
-              <div className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] animate-pulse" />
-              <span className="text-[10px] uppercase font-bold text-[var(--accent-primary)]">Streaming</span>
-            </div>}
-          </div>
-          <p className="text-sm mb-6">{job.description}</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-[var(--bg-tertiary)] p-4 rounded-xl border border-[var(--border-dim)]">
-              <div className="text-[10px] font-bold uppercase text-[var(--text-muted)] mb-1">Freelancer</div>
-              <Link href={`/profile/${job.freelancer}`} className="font-mono text-xs truncate text-wrap-safe hover:text-[var(--accent-primary)] transition-colors">
-                {job.freelancer}
-              </Link>
-            </div>
-            <div className="bg-[var(--bg-tertiary)] p-4 rounded-xl border border-[var(--border-dim)]">
-              <div className="text-[10px] font-bold uppercase text-[var(--text-muted)] mb-1">Rate</div>
-              <div className="font-semibold">{formatEther(job.ratePerSecond)} MON/sec</div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="w-full md:w-[280px] flex flex-col gap-4">
-          <EscrowStat label="Total Escrowed" value={`${formatEther(job.totalDeposit)} MON`} />
-          <EscrowStat label="Remaining" value={`${formatEther(remaining)} MON`} highlight />
-        </div>
+    <div className="card-standard bg-white text-black flex flex-col gap-4 !p-8 border-[2px] border-black rounded-[40px]">
+      <div className="flex items-center gap-4 mb-4">
+        <h3 className="font-fjalla !text-4xl m-0 leading-none text-white bg-black px-4 py-1 rounded-[20px] border-[1.5px] border-black">Job #{jobId}</h3>
+        <span className="badge bg-black !text-white uppercase text-[10px] px-3 py-1 font-bold">{statusLabel}</span>
+        {job.streamActive && <span className="badge bg-white text-black border-[1.5px] border-black animate-pulse">Streaming</span>}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <EscrowMetric label="Earned" value={`${Number(formatEther(earned)).toFixed(6)}`} />
-        <EscrowMetric label="Withdrawn" value={`${formatEther(job.totalWithdrawn)}`} />
-        <EscrowMetric label="Progress" value={`${((Number(earned) / Number(job.totalDeposit)) * 100).toFixed(1)}%`} progress={Number(earned) / Number(job.totalDeposit)} />
+      <div className="grid grid-cols-2 gap-4">
+        <EscrowStat label="Total Escrowed" value={`${formatEther(job.totalDeposit)} MON`} />
+        <EscrowStat label="Remaining" value={`${formatEther(remaining)} MON`} />
+      </div>
+      
+      <EscrowStat label="Freelancer" value={job.freelancer} linkHref={`/profile/${job.freelancer}`} />
+      
+      <div className="grid grid-cols-2 gap-4">
+        <EscrowStat label="Rate" value={`${formatEther(job.ratePerSecond)} MON/S`} />
+        <EscrowStat label="Progress" value={`${((Number(earned) / Number(job.totalDeposit)) * 100).toFixed(1)}%`} progress={Number(earned) / Number(job.totalDeposit)} />
       </div>
 
-      <div className="flex flex-wrap gap-3 pt-6 border-t border-[var(--border-dim)]">
+      <div className="grid grid-cols-2 gap-4 mb-2">
+        <EscrowStat label="Earned" value={Number(formatEther(earned)).toFixed(4)} />
+        <EscrowStat label="Withdrawn" value={formatEther(job.totalWithdrawn)} />
+      </div>
+
+      <div className="flex flex-wrap gap-2 w-full pt-4 mt-2 border-t-[1.5px] border-black/20">
         {(job.status === 1 || job.status === 2) && (
           <>
-            <div className="flex flex-col gap-3 w-full sm:w-auto">
-              <button 
-                onClick={() => runEmployerAction("Complete Job", jobId, "approve")} 
-                disabled={busy} 
-                className="btn-primary"
-                title="Full release of earned funds and close job"
-              >
-                Approve & Complete
-              </button>
-              <button 
-                onClick={() => runEmployerForceSettle(jobId, job.settlementInterval)} 
-                disabled={busy} 
-                className="btn-secondary"
-                title="Push earned funds to freelancer now"
-              >
-                Settle Earned Now
-              </button>
-            </div>
-            <button 
-              onClick={() => runEmployerAutoSettlement(jobId, !job.autoSettlementEnabled)} 
-              disabled={busy} 
-              className="btn-secondary"
-            >
-              {job.autoSettlementEnabled ? "Disable Auto-Payout" : "Enable Auto-Payout (10s)"}
+            <button onClick={() => runEmployerAction("Pause", jobId, "employerPauseStream")} disabled={busy || !job.streamActive} className="btn-base bg-white border-[1.5px] border-black text-black hover:bg-black hover:text-white text-[10px] font-bold px-5 !h-12 !rounded-[20px] transition-colors">
+              Pause Stream
             </button>
-            <button 
-              onClick={() => runEmployerAction("Pause", jobId, "employerPauseStream")} 
-              disabled={busy || !job.streamActive} 
-              className="btn-secondary"
-            >
-              Pause
+            <button onClick={() => runEmployerForceSettle(jobId)} disabled={busy || Number(formatEther(earned)) <= Number(formatEther(job.totalWithdrawn))} className="btn-base bg-white border-[1.5px] border-black text-black hover:bg-black hover:text-white text-[10px] font-bold px-5 !h-12 !rounded-[20px] transition-colors">
+              Settle & Pay
             </button>
-            <button 
-              onClick={() => runEmployerAction("Dispute", jobId, "dispute")} 
-              disabled={busy} 
-              className="btn-ghost text-red-500 hover:bg-red-500/10 hover:text-red-400"
-            >
+            <button onClick={() => runEmployerAutoSettlement(jobId, !job.autoSettlementEnabled)} disabled={busy} className={`btn-base bg-white border-[1.5px] ${job.autoSettlementEnabled ? 'border-green-600 text-green-600 hover:bg-green-600 hover:text-white' : 'border-black text-black hover:bg-black hover:text-white'} text-[10px] font-bold px-5 !h-12 !rounded-[20px] transition-colors`}>
+              {job.autoSettlementEnabled ? "Disable Auto-Pay" : "Enable Auto-Pay"}
+            </button>
+            <button onClick={() => runEmployerAction("Dispute", jobId, "dispute")} disabled={busy} className="btn-base bg-white border-[1.5px] border-[#ff6b6b] text-[#ff6b6b] hover:bg-[#ff6b6b] hover:text-white text-[10px] font-bold px-5 !h-12 !rounded-[20px] transition-colors ml-auto">
               Dispute
+            </button>
+            <button onClick={() => runEmployerAction("Complete", jobId, "approve")} disabled={busy} className="btn-base bg-black border-[1.5px] border-black text-white hover:bg-[#333] hover:text-white text-[10px] font-bold px-5 !h-12 !rounded-[20px] transition-colors">
+              Approve
             </button>
           </>
         )}
         {job.status === 4 && (
-          <Link href={`/dispute/${jobId}`} className="btn-primary">
-            Dispute Workspace
+          <Link href={`/dispute/${jobId}`} className="btn-base bg-black border border-black text-white text-[10px] font-bold px-6 !h-12 !rounded-[20px] hover:bg-[#333] ml-auto">
+            Enter Dispute
           </Link>
         )}
       </div>
@@ -759,25 +694,18 @@ function EmployerJobCard({
   );
 }
 
-function EscrowStat({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
-  return (
-    <div className="bg-[var(--bg-tertiary)] p-4 rounded-xl border border-[var(--border-dim)] flex items-center justify-between">
-      <span className="text-[10px] font-bold uppercase text-[var(--text-muted)]">{label}</span>
-      <span className={`font-bold ${highlight ? 'text-[var(--accent-primary)]' : ''}`}>{value}</span>
-    </div>
-  );
-}
-
-function EscrowMetric({ label, value, progress }: { label: string; value: string; progress?: number }) {
-  return (
-    <div className="bg-[var(--bg-tertiary)] p-4 rounded-xl border border-[var(--border-dim)]">
-      <div className="text-[10px] font-bold uppercase text-[var(--text-muted)] mb-2">{label}</div>
-      <div className="text-xl font-bold mb-3">{value} {progress === undefined && <span className="text-xs font-normal">MON</span>}</div>
+function EscrowStat({ label, value, progress, linkHref }: { label: string; value: string; progress?: number; linkHref?: string }) {
+  const content = (
+    <div className="bg-white border-[2px] border-black text-black px-6 py-3 rounded-[30px] flex flex-col justify-center min-h-[70px]">
+      <span className="text-[10px] font-figtree font-bold uppercase tracking-wider mb-1 leading-none">{label}</span>
+      <span className={`font-fjalla text-xl truncate leading-none ${linkHref ? 'hover:underline cursor-pointer border-b border-black/20 pb-1' : ''}`}>{value}</span>
       {progress !== undefined && (
-        <div className="h-1 w-full bg-[var(--bg-secondary)] rounded-full overflow-hidden">
-          <div className="h-full bg-[var(--accent-primary)]" style={{ width: `${Math.min(100, progress * 100)}%` }} />
+        <div className="h-1 w-full bg-gray-200 rounded-full mt-2 overflow-hidden">
+          <div className="h-full bg-black" style={{ width: `${Math.min(100, progress * 100)}%` }} />
         </div>
       )}
     </div>
   );
+  
+  return linkHref ? <Link href={linkHref}>{content}</Link> : content;
 }
