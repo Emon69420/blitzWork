@@ -17,10 +17,11 @@ app.use(express.json());
 const MONAD_RPC = process.env.MONAD_RPC_URL || "https://testnet-rpc.monad.xyz";
 const ARBITRATOR_KEY = process.env.ARBITRATOR_PRIVATE_KEY;
 const ESCROW_ADDRESS = process.env.ESCROW_CONTRACT_ADDRESS;
+const REGISTRY_ADDRESS = process.env.REGISTRY_CONTRACT_ADDRESS;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-if (!ARBITRATOR_KEY || !ESCROW_ADDRESS) {
-  console.error("Missing ARBITRATOR_PRIVATE_KEY or ESCROW_CONTRACT_ADDRESS in .env");
+if (!ARBITRATOR_KEY || !ESCROW_ADDRESS || !REGISTRY_ADDRESS) {
+  console.error("Missing ARBITRATOR_PRIVATE_KEY, ESCROW_CONTRACT_ADDRESS, or REGISTRY_CONTRACT_ADDRESS in .env");
   process.exit(1);
 }
 
@@ -36,7 +37,13 @@ const ESCROW_ABI = [
   "function settle(uint256 jobId) external returns (uint256 settledAmount)",
 ];
 
+const REGISTRY_ABI = [
+  "function issueCredential(address freelancer, string calldata credentialType, string calldata description, string calldata issuerName) external returns (uint256 credentialId)",
+  "function getCredentials(address freelancer) external view returns (tuple(uint256 id, string credentialType, string description, string issuerName, address issuerAddress, uint256 timestamp, bool isValid)[])",
+];
+
 const escrowContract = new ethers.Contract(ESCROW_ADDRESS, ESCROW_ABI, arbitratorWallet);
+const registryContract = new ethers.Contract(REGISTRY_ADDRESS, REGISTRY_ABI, arbitratorWallet);
 const ai = GEMINI_API_KEY ? new GoogleGenAI({ apiKey: GEMINI_API_KEY }) : null;
 
 type ArbitrationInput = {
@@ -324,6 +331,7 @@ app.get("/health", async (_req: Request, res: Response) => {
       arbitratorAddress: arbitratorWallet.address,
       arbitratorBalance: ethers.formatEther(balance),
       escrowContract: ESCROW_ADDRESS,
+      registryContract: REGISTRY_ADDRESS,
       rpc: MONAD_RPC,
       aiConfigured: Boolean(GEMINI_API_KEY),
     });
@@ -331,6 +339,40 @@ app.get("/health", async (_req: Request, res: Response) => {
     return res.status(500).json({
       status: "error",
       message: error instanceof Error ? error.message : "Health check failed",
+    });
+  }
+});
+
+app.post("/api/issue-credential", async (req: Request, res: Response) => {
+  const { freelancerAddress, credentialType, description, issuerName, employerAddress } = req.body;
+
+  if (!freelancerAddress || !credentialType || !description || !issuerName || !employerAddress) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+    console.log(`[Credential] Issuing for ${freelancerAddress} from ${employerAddress}...`);
+
+    // In a real production app, we would verify the signature of the employerAddress here.
+    // For the hackathon, we proceed if employerAddress is provided.
+
+    const tx = await registryContract.issueCredential(
+      freelancerAddress,
+      credentialType,
+      description,
+      issuerName
+    );
+    const receipt = await tx.wait();
+
+    return res.json({
+      success: true,
+      credentialId: receipt.logs[0]?.topics[2], // CredentialIssued event
+      txHash: receipt.hash,
+    });
+  } catch (error) {
+    console.error("[Credential] Transaction failed:", error);
+    return res.status(500).json({
+      error: error instanceof Error ? error.message : "Failed to issue on-chain credential",
     });
   }
 });
