@@ -1,0 +1,221 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #141414;
+  --bg-tertiary: #1e1e1e;
+  
+  --accent-primary: #ff4d29;
+  --accent-glow: rgba(255, 77, 41, 0.4);
+  --accent-soft: #ff6f52;
+  
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0a0;
+  --text-muted: #666666;
+  
+  --border-dim: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(255, 77, 41, 0.3);
+  
+  --radius-xl: 1.5rem; /* rounded-3xl */
+  --radius-lg: 1rem;   /* rounded-2xl */
+  --radius-md: 0.75rem; /* rounded-xl */
+  
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-primary);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Typography Hierarchy */
+h1, .h1 { font-size: 3.5rem; font-weight: 700; letter-spacing: -0.04em; color: var(--text-primary); }
+h2, .h2 { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text-primary); }
+h3, .h3 { font-size: 1.5rem; font-weight: 600; color: var(--text-primary); }
+p { color: var(--text-secondary); line-height: 1.6; }
+
+/* Text Wrapping & Safety */
+.text-wrap-safe {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  word-break: break-all;
+}
+
+/* Containers & Cards */
+.card-standard {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-standard:hover {
+  border-color: var(--border-active);
+  box-shadow: 0 0 30px rgba(255, 77, 41, 0.05);
+}
+
+.card-header {
+  margin-bottom: var(--space-4);
+}
+
+.card-footer {
+  margin-top: auto;
+  padding-top: var(--space-4);
+}
+
+/* Layout Consistency */
+.section-padding {
+  padding: var(--space-12) var(--space-6);
+}
+
+.row-equal-height {
+  display: grid;
+  align-items: stretch;
+}
+
+/* Buttons System */
+.btn-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 3rem;
+  padding: 0 1.5rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  @apply btn-base;
+  background: var(--accent-primary);
+  color: #ffffff;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: var(--accent-soft);
+  box-shadow: 0 0 20px var(--accent-glow);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  @apply btn-base;
+  background: transparent;
+  border: 1px solid var(--border-dim);
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--text-secondary);
+}
+
+.btn-ghost {
+  @apply btn-base;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+}
+
+.btn-ghost:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Specialized Components */
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  padding: var(--space-4) var(--space-6);
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.sidebar-nav-item.active {
+  background: var(--bg-tertiary);
+  color: var(--accent-primary);
+}
+
+.sidebar-nav-item:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+/* Chips & Badges */
+.badge {
+  display: inline-flex;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--space-1);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+.badge-accent {
+  background: var(--accent-glow);
+  color: var(--accent-primary);
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Custom Gradients from Image */
+.bg-gradient-subtle {
+  background: radial-gradient(circle at top right, rgba(255, 77, 41, 0.08), transparent 40%),
+              radial-gradient(circle at bottom left, rgba(255, 77, 41, 0.05), transparent 30%);
+}
+

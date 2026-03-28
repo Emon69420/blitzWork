@@ -1,0 +1,21 @@
+{
+  "name": "monadwork-contracts",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "hardhat compile",
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:monad": "hardhat run scripts/deploy.ts --network monadTestnet",
+    "quicktest:monad": "hardhat run scripts/quickTest.ts --network monadTestnet"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.0",
+    "@types/node": "^22.14.1",
+    "dotenv": "^16.4.7",
+    "hardhat": "^2.24.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
